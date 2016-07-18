@@ -12,7 +12,7 @@ use yii\base\InvalidConfigException;
  * @author widyhu
  *
  */
-class WxPayApi extends Component
+class WxPay extends Component
 {
     /**
      * 统一下单链接
