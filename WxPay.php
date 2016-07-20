@@ -163,7 +163,7 @@ class WxPay extends Component
 		$startTimeStamp = self::getMillisecond();//请求开始时间
 		$response = self::postXmlCurl($xml, self::UNIFIED_ORDER, false, $timeOut);
 		$result = WxPayResults::Init($response);
-		self::reportCostTime(self::UNIFIED_ORDER, $startTimeStamp, $result);//上报请求花费时间
+		$this->reportCostTime(self::UNIFIED_ORDER, $startTimeStamp, $result);//上报请求花费时间
 		
 		return $result;
 	}
@@ -191,7 +191,7 @@ class WxPay extends Component
 		$startTimeStamp = self::getMillisecond();//请求开始时间
 		$response = self::postXmlCurl($xml, self::ORDER_QUERY, false, $timeOut);
 		$result = WxPayResults::Init($response);
-		self::reportCostTime(self::ORDER_QUERY, $startTimeStamp, $result);//上报请求花费时间
+		$this->reportCostTime(self::ORDER_QUERY, $startTimeStamp, $result);//上报请求花费时间
 		
 		return $result;
 	}
@@ -218,7 +218,7 @@ class WxPay extends Component
 		$startTimeStamp = self::getMillisecond();//请求开始时间
 		$response = self::postXmlCurl($xml, self::CLOSE_ORDER, false, $timeOut);
 		$result = WxPayResults::Init($response);
-		self::reportCostTime(self::CLOSE_ORDER, $startTimeStamp, $result);//上报请求花费时间
+		$this->reportCostTime(self::CLOSE_ORDER, $startTimeStamp, $result);//上报请求花费时间
 		
 		return $result;
 	}
@@ -254,7 +254,7 @@ class WxPay extends Component
 		$startTimeStamp = self::getMillisecond();//请求开始时间
 		$response = self::postXmlCurl($xml, self::REFUND, true, $timeOut);
 		$result = WxPayResults::Init($response);
-		self::reportCostTime(self::REFUND, $startTimeStamp, $result);//上报请求花费时间
+		$this->reportCostTime(self::REFUND, $startTimeStamp, $result);//上报请求花费时间
 		
 		return $result;
 	}
@@ -288,7 +288,7 @@ class WxPay extends Component
 		$startTimeStamp = self::getMillisecond();//请求开始时间
 		$response = self::postXmlCurl($xml, self::REFUND_QUERY, false, $timeOut);
 		$result = WxPayResults::Init($response);
-		self::reportCostTime(self::REFUND_QUERY, $startTimeStamp, $result);//上报请求花费时间
+		$this->reportCostTime(self::REFUND_QUERY, $startTimeStamp, $result);//上报请求花费时间
 		
 		return $result;
 	}
@@ -348,7 +348,7 @@ class WxPay extends Component
 		$startTimeStamp = self::getMillisecond();//请求开始时间
 		$response = self::postXmlCurl($xml, self::MICRO_PAY, false, $timeOut);
 		$result = WxPayResults::Init($response);
-		self::reportCostTime(self::MICRO_PAY, $startTimeStamp, $result);//上报请求花费时间
+		$this->reportCostTime(self::MICRO_PAY, $startTimeStamp, $result);//上报请求花费时间
 		
 		return $result;
 	}
@@ -375,7 +375,7 @@ class WxPay extends Component
 		$startTimeStamp = self::getMillisecond();//请求开始时间
 		$response = self::postXmlCurl($xml, self::REVERSE, true, $timeOut);
 		$result = WxPayResults::Init($response);
-		self::reportCostTime(self::REVERSE, $startTimeStamp, $result);//上报请求花费时间
+		$this->reportCostTime(self::REVERSE, $startTimeStamp, $result);//上报请求花费时间
 		
 		return $result;
 	}
@@ -461,7 +461,7 @@ class WxPay extends Component
 		$startTimeStamp = self::getMillisecond();//请求开始时间
 		$response = self::postXmlCurl($xml, $url, false, $timeOut);
 		$result = WxPayResults::Init($response);
-		self::reportCostTime($url, $startTimeStamp, $result);//上报请求花费时间
+		$this->reportCostTime($url, $startTimeStamp, $result);//上报请求花费时间
 		return $result;
 	}
 	
@@ -520,7 +520,7 @@ class WxPay extends Component
 	 * @param int $startTimeStamp
 	 * @param array $data
 	 */
-	private static function reportCostTime($url, $startTimeStamp, $data)
+	private function reportCostTime($url, $startTimeStamp, $data)
 	{
 		//如果不需要上报数据
 		if(self::REPORT_LEVENL == 0){
@@ -571,7 +571,7 @@ class WxPay extends Component
 		}
 		
 		try{
-			self::report($objInput);
+			 $this->report($objInput);
 		} catch (WxPayException $e){
 			//不做任何处理
 		}
