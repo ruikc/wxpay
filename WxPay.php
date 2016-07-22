@@ -107,6 +107,8 @@ class WxPay extends Component
      */
     public $inputObj;
 
+    public $timeOut = 6;
+
     public function init()
     {
         if ($this->appId === null) {
@@ -129,7 +131,7 @@ class WxPay extends Component
 	 * @throws WxPayException
 	 * @return 成功时返回，其他抛异常
 	 */
-	public function unifiedOrder($inputObj, $timeOut = 6)
+	public function unifiedOrder($inputObj)
 	{
 		//检测必填参数
 		if(!$inputObj->IsOut_trade_noSet()) {
@@ -154,16 +156,10 @@ class WxPay extends Component
 		if(!$inputObj->IsNotify_urlSet()){
 			$inputObj->SetNotify_url($this->notify_url);//异步通知url
 		}
-
-		$inputObj->SetSpbill_create_ip($_SERVER['REMOTE_ADDR']);//终端ip
+//		$inputObj->SetSpbill_create_ip($_SERVER['REMOTE_ADDR']);//终端ip
 		//$inputObj->SetSpbill_create_ip("1.1.1.1");  	    
         //初始化
-        $xml = $this->init_obj($inputObj);
-		
-		$startTimeStamp = self::getMillisecond();//请求开始时间
-		$response = self::postXmlCurl($xml, self::UNIFIED_ORDER, false, $timeOut);
-		$result = WxPayResults::Init($response);
-		$this->reportCostTime(self::UNIFIED_ORDER, $startTimeStamp, $result);//上报请求花费时间
+        $result = $this->init_obj($inputObj,self::UNIFIED_ORDER, false);
 		
 		return $result;
 	}
@@ -177,7 +173,7 @@ class WxPay extends Component
 	 * @throws WxPayException
 	 * @return 成功时返回，其他抛异常
 	 */
-	public function orderQuery($inputObj, $timeOut = 6)
+	public function orderQuery($inputObj)
 	{
 //		$url = "https://api.mch.weixin.qq.com/pay/orderquery";
 
@@ -186,13 +182,7 @@ class WxPay extends Component
 			throw new WxPayException("订单查询接口中，out_trade_no、transaction_id至少填一个！");
 		}
         //初始化
-        $xml = $this->init_obj($inputObj);
-		
-		$startTimeStamp = self::getMillisecond();//请求开始时间
-		$response = self::postXmlCurl($xml, self::ORDER_QUERY, false, $timeOut);
-		$result = WxPayResults::Init($response);
-		$this->reportCostTime(self::ORDER_QUERY, $startTimeStamp, $result);//上报请求花费时间
-		
+        $result = $this->init_obj($inputObj,self::ORDER_QUERY, false);
 		return $result;
 	}
 	
@@ -205,7 +195,7 @@ class WxPay extends Component
 	 * @throws WxPayException
 	 * @return 成功时返回，其他抛异常
 	 */
-	public function closeOrder($inputObj, $timeOut = 6)
+	public function closeOrder($inputObj)
 	{
 //		$url = "https://api.mch.weixin.qq.com/pay/closeorder";
 		//检测必填参数
@@ -213,13 +203,7 @@ class WxPay extends Component
 			throw new WxPayException("订单查询接口中，out_trade_no必填！");
 		}
         //初始化
-        $xml = $this->init_obj($inputObj);
-		
-		$startTimeStamp = self::getMillisecond();//请求开始时间
-		$response = self::postXmlCurl($xml, self::CLOSE_ORDER, false, $timeOut);
-		$result = WxPayResults::Init($response);
-		$this->reportCostTime(self::CLOSE_ORDER, $startTimeStamp, $result);//上报请求花费时间
-		
+        $result = $this->init_obj($inputObj,self::CLOSE_ORDER, false);
 		return $result;
 	}
 
@@ -233,7 +217,7 @@ class WxPay extends Component
 	 * @throws WxPayException
 	 * @return 成功时返回，其他抛异常
 	 */
-	public function refund($inputObj, $timeOut = 6)
+	public function refund($inputObj)
 	{
 //		$url = "https://api.mch.weixin.qq.com/secapi/pay/refund";
 
@@ -250,12 +234,7 @@ class WxPay extends Component
 			throw new WxPayException("退款申请接口中，缺少必填参数op_user_id！");
 		}
         //初始化
-        $xml = $this->init_obj($inputObj);
-		$startTimeStamp = self::getMillisecond();//请求开始时间
-		$response = self::postXmlCurl($xml, self::REFUND, true, $timeOut);
-		$result = WxPayResults::Init($response);
-		$this->reportCostTime(self::REFUND, $startTimeStamp, $result);//上报请求花费时间
-		
+        $result = $this->init_obj($inputObj,self::REFUND, true);
 		return $result;
 	}
 	
@@ -271,7 +250,7 @@ class WxPay extends Component
 	 * @throws WxPayException
 	 * @return 成功时返回，其他抛异常
 	 */
-	public function refundQuery($inputObj, $timeOut = 6)
+	public function refundQuery($inputObj)
 	{
 //		$url = "https://api.mch.weixin.qq.com/pay/refundquery";
 		//检测必填参数
@@ -281,15 +260,7 @@ class WxPay extends Component
 			!$inputObj->IsRefund_idSet()) {
 			throw new WxPayException("退款查询接口中，out_refund_no、out_trade_no、transaction_id、refund_id四个参数必填一个！");
 		}
-        //初始化
-        //初始化
-        $xml = $this->init_obj($inputObj);
-		
-		$startTimeStamp = self::getMillisecond();//请求开始时间
-		$response = self::postXmlCurl($xml, self::REFUND_QUERY, false, $timeOut);
-		$result = WxPayResults::Init($response);
-		$this->reportCostTime(self::REFUND_QUERY, $startTimeStamp, $result);//上报请求花费时间
-		
+        $result = $this->init_obj($inputObj,self::REFUND_QUERY, false);
 		return $result;
 	}
 	
@@ -301,7 +272,7 @@ class WxPay extends Component
 	 * @throws WxPayException
 	 * @return 成功时返回，其他抛异常
 	 */
-	public function downloadBill($inputObj, $timeOut = 6)
+	public function downloadBill($inputObj)
 	{
 //		$url = "https://api.mch.weixin.qq.com/pay/downloadbill";
 		//检测必填参数
@@ -311,7 +282,7 @@ class WxPay extends Component
 
 		$xml = $inputObj->ToXml();
 		
-		$response = self::postXmlCurl($xml, self::DOWNLOAD_BILL, false, $timeOut);
+		$response = self::postXmlCurl($xml, self::DOWNLOAD_BILL, false, $this->timeOut);
 		if(substr($response, 0 , 5) == "<xml>"){
 			return "";
 		}
@@ -342,14 +313,8 @@ class WxPay extends Component
 		}
 		
 		$inputObj->SetSpbill_create_ip($_SERVER['REMOTE_ADDR']);//终端ip
-        //初始化
-        $xml = $this->init_obj($inputObj);
 
-		$startTimeStamp = self::getMillisecond();//请求开始时间
-		$response = self::postXmlCurl($xml, self::MICRO_PAY, false, $timeOut);
-		$result = WxPayResults::Init($response);
-		$this->reportCostTime(self::MICRO_PAY, $startTimeStamp, $result);//上报请求花费时间
-		
+        $result = $this->init_obj($inputObj,self::MICRO_PAY, false);
 		return $result;
 	}
 	
@@ -361,7 +326,7 @@ class WxPay extends Component
 	 * @param int $timeOut
 	 * @throws WxPayException
 	 */
-	public function reverse($inputObj, $timeOut = 6)
+	public function reverse($inputObj)
 	{
 //		$url = "https://api.mch.weixin.qq.com/secapi/pay/reverse";
 		//检测必填参数
@@ -369,14 +334,7 @@ class WxPay extends Component
 			throw new WxPayException("撤销订单API接口中，参数out_trade_no和transaction_id必须填写一个！");
 		}
 
-        //初始化
-        $xml = $this->init_obj($inputObj);
-		
-		$startTimeStamp = self::getMillisecond();//请求开始时间
-		$response = self::postXmlCurl($xml, self::REVERSE, true, $timeOut);
-		$result = WxPayResults::Init($response);
-		$this->reportCostTime(self::REVERSE, $startTimeStamp, $result);//上报请求花费时间
-		
+        $result = $this->init_obj($inputObj,self::REVERSE, true);
 		return $result;
 	}
 	
@@ -408,9 +366,8 @@ class WxPay extends Component
 		$inputObj->SetUser_ip($_SERVER['REMOTE_ADDR']);//终端ip
 		$inputObj->SetTime(date("YmdHis"));//商户上报时间	 
         //初始化
-        $xml = $this->init_obj($inputObj);
-		
-		$startTimeStamp = self::getMillisecond();//请求开始时间
+        $obj = $this->init_obj($inputObj,null,false,true);
+		$xml = $obj->ToXml();
 		$response = self::postXmlCurl($xml, self::REPORT, false, $timeOut);
 		return $response;
 	}
@@ -424,7 +381,7 @@ class WxPay extends Component
 	 * @throws WxPayException
 	 * @return 成功时返回，其他抛异常
 	 */
-	public function bizpayurl($inputObj, $timeOut = 6)
+	public function bizpayurl($inputObj)
 	{
 		if(!$inputObj->IsProduct_idSet()){
 			throw new WxPayException("生成二维码，缺少必填参数product_id！");
@@ -432,7 +389,7 @@ class WxPay extends Component
 		
 		$inputObj->SetTime_stamp(time());//时间戳
         //初始化
-        $inputObj = $this->init_obj($inputObj,true);
+        $inputObj = $this->init_obj($inputObj,null,null,true);
 		
 		return $inputObj->GetValues();
 	}
@@ -448,20 +405,14 @@ class WxPay extends Component
 	 * @throws WxPayException
 	 * @return 成功时返回，其他抛异常
 	 */
-	public function shorturl($inputObj, $timeOut = 6)
+	public function shorturl($inputObj)
 	{
-		$url = "https://api.mch.weixin.qq.com/tools/shorturl";
+//		$url = "https://api.mch.weixin.qq.com/tools/shorturl";
 		//检测必填参数
 		if(!$inputObj->IsLong_urlSet()) {
 			throw new WxPayException("需要转换的URL，签名用原串，传输需URL encode！");
 		}
-        //初始化
-        $xml = $this->init_obj($inputObj);
-		
-		$startTimeStamp = self::getMillisecond();//请求开始时间
-		$response = self::postXmlCurl($xml, $url, false, $timeOut);
-		$result = WxPayResults::Init($response);
-		$this->reportCostTime($url, $startTimeStamp, $result);//上报请求花费时间
+        $result = $this->init_obj($inputObj,self::SHORTURL, false);
 		return $result;
 	}
 	
@@ -649,16 +600,21 @@ class WxPay extends Component
      * @author: rickeryu <lhyfe1987@163.com>
      * @time: 16/7/18 下午2:55
      */
-	private function init_obj($inputObj,$returnObj=false){
+	private function init_obj($inputObj, $url, $useCert = false,$returnObj=false){
 
         $inputObj->SetAppid($this->appId);//公众账号ID
         $inputObj->SetMch_id($this->mchid);//商户号
         $inputObj->SetNonce_str($this->getNonceStr());//随机字符串
+        $inputObj->SetKey($this->key);
+        $inputObj->SetSign();//签名
 
-        $inputObj->SetSign($this->key);//签名
         if(!$returnObj){
             $xml = $inputObj->ToXml();
-            return $xml;
+//            $startTimeStamp = self::getMillisecond();//请求开始时间
+            $response = self::postXmlCurl($xml, $url, $useCert, $this->timeOut);
+            $result = WxPayResults::Init($response,$this->key);
+//            $this->reportCostTime($url, $startTimeStamp, $result);//上报请求花费时间
+            return $result;
         }else{
             return $inputObj;
         }
