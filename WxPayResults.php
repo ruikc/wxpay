@@ -20,7 +20,7 @@ class WxPayResults extends WxPayDataBase
 	{
 		//fix异常
 		if(!$this->IsSignSet()){
-			throw new WxPayException("签名错误11！");
+			throw new WxPayException("签名错误！");
 		}
 		
 		$sign = $this->MakeSign();
@@ -49,8 +49,6 @@ class WxPayResults extends WxPayDataBase
 	public static function InitFromArray($array, $noCheckSign = false)
 	{
 		$obj = new self();
-        var_dump($obj->GetValues());
-        exit;
 		$obj->FromArray($array);
 		if($noCheckSign == false){
 			$obj->CheckSign();

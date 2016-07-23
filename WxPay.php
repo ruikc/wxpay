@@ -424,15 +424,15 @@ class WxPay extends Component
  	 * 回调类成员函数方法:notify(array($this, you_function));
  	 * $callback  原型为：function function_name($data){}
  	 */
-	public function notify($callback, &$msg)
+	public function notify($callback)
 	{
 		//获取通知的数据
 		$xml = $GLOBALS['HTTP_RAW_POST_DATA'];
 		//如果返回成功则验证签名
 		try {
-			$result = WxPayResults::Init($xml);
+			$result = WxPayResults::Init($xml,$this->key);
 		} catch (WxPayException $e){
-			$msg = $e->errorMessage();
+            throw new WxPayException($e->errorMessage());
 			return false;
 		}
 		
